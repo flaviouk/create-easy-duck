@@ -29,6 +29,12 @@ Object {
 }
 `;
 
+exports[`should create action creators 5`] = `
+Object {
+  "type": "RANDOM_NAME/RESET",
+}
+`;
+
 exports[`should create base types 1`] = `
 Object {
   "ERROR": "RANDOM_NAME/ERROR",
@@ -47,48 +53,69 @@ Object {
 }
 `;
 
-exports[`should create reducer 1`] = `
+exports[`should create duck 1`] = `
 Object {
   "error": null,
-  "payload": null,
-  "status": Object {
-    "isLoaded": false,
-    "isLoading": false,
+  "isLoading": false,
+  "payload": Object {
+    "data": Object {
+      "count": 1,
+    },
   },
+}
+`;
+
+exports[`should create duck 2`] = `false`;
+
+exports[`should create duck 3`] = `
+Object {
+  "data": Object {
+    "count": 1,
+  },
+}
+`;
+
+exports[`should create duck 4`] = `
+Object {
+  "count": 1,
+}
+`;
+
+exports[`should create duck 5`] = `null`;
+
+exports[`should create duck 6`] = `1`;
+
+exports[`should create reducer 1`] = `
+Object {
+  "data": null,
+  "error": null,
+  "isLoading": false,
+  "payload": null,
 }
 `;
 
 exports[`should create reducer 2`] = `
 Object {
   "error": null,
+  "isLoading": false,
   "payload": null,
-  "status": Object {
-    "isLoaded": false,
-    "isLoading": false,
-  },
 }
 `;
 
 exports[`should create reducer 3`] = `
 Object {
   "error": null,
+  "isLoading": true,
   "payload": null,
-  "status": Object {
-    "isLoaded": false,
-    "isLoading": true,
-  },
 }
 `;
 
 exports[`should create reducer 4`] = `
 Object {
   "error": null,
+  "isLoading": false,
   "payload": Object {
     "it": "works",
-  },
-  "status": Object {
-    "isLoaded": true,
-    "isLoading": false,
   },
 }
 `;
@@ -96,21 +123,49 @@ Object {
 exports[`should create reducer 5`] = `
 Object {
   "error": "Something went wrong",
+  "isLoading": false,
   "payload": null,
-  "status": Object {
-    "isLoaded": true,
-    "isLoading": false,
-  },
 }
 `;
 
 exports[`should create reducer 6`] = `
 Object {
   "error": null,
+  "isLoading": false,
   "payload": null,
-  "status": Object {
-    "isLoaded": false,
-    "isLoading": false,
+}
+`;
+
+exports[`should create selectors 1`] = `
+Object {
+  "error": "It failed!",
+  "isLoading": false,
+  "payload": Object {
+    "data": Object {
+      "hello": "there",
+    },
   },
 }
 `;
+
+exports[`should create selectors 2`] = `false`;
+
+exports[`should create selectors 3`] = `
+Object {
+  "data": Object {
+    "hello": "there",
+  },
+}
+`;
+
+exports[`should create selectors 4`] = `
+Object {
+  "hello": "there",
+}
+`;
+
+exports[`should create selectors 5`] = `"It failed!"`;
+
+exports[`should create selectors 6`] = `"Loaded"`;
+
+exports[`should create selectors 7`] = `"Loaded"`;

@@ -1,29 +1,3 @@
-/*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
-
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
-
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
-***************************************************************************** */
-
-var __assign = function() {
-    __assign = Object.assign || function __assign(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-
 function defaultEqualityCheck(a, b) {
   return a === b;
 }
@@ -124,106 +98,116 @@ function createSelectorCreator(memoize) {
 
 var createSelector = createSelectorCreator(defaultMemoize);
 
-// interface DuckOptions {
-//   type: Type
-//   defaultPayload: any
-//   [key: string]: (args: any) => void
-// }
-var createTypes = function (type) { return ({
-    START: type + "/START",
-    RESET: type + "/RESET",
-    FINISH: type + "/FINISH",
-    ERROR: type + "/ERROR",
-}); };
-var createActionCreators = function (type) {
-    var _a = createTypes(type), START = _a.START, RESET = _a.RESET, FINISH = _a.FINISH, ERROR = _a.ERROR;
-    return {
-        start: function () { return ({ type: START }); },
-        reset: function () { return ({ type: RESET }); },
-        finish: function (payload) { return ({ type: FINISH, payload: payload }); },
-        error: function (error) { return ({
-            type: ERROR,
-            error: (error && error.message) || 'Something went wrong',
-        }); },
-    };
+const createTypes = type => ({
+  START: `${type}/START`,
+  RESET: `${type}/RESET`,
+  FINISH: `${type}/FINISH`,
+  ERROR: `${type}/ERROR`
+});
+const createActionCreators = type => {
+  const {
+    START,
+    RESET,
+    FINISH,
+    ERROR
+  } = createTypes(type);
+  return {
+    start: () => ({
+      type: START
+    }),
+    reset: () => ({
+      type: RESET
+    }),
+    finish: payload => ({
+      type: FINISH,
+      payload
+    }),
+    error: error => ({
+      type: ERROR,
+      error: error && error.message || 'Something went wrong'
+    })
+  };
 };
-var INITIAL_STATE = {
-    status: {
-        isLoading: false,
-        isLoaded: false,
-    },
-    error: null,
-    payload: null,
+const INITIAL_STATE = {
+  isLoading: false,
+  error: null,
+  payload: null
 };
-var createReducer = function (type, defaultPayload) {
-    if (defaultPayload === void 0) { defaultPayload = null; }
-    return function (state, action) {
-        if (state === void 0) { state = INITIAL_STATE; }
-        var _a = createTypes(type), START = _a.START, FINISH = _a.FINISH, ERROR = _a.ERROR, RESET = _a.RESET;
-        switch (action.type) {
-            case START:
-                return {
-                    status: { isLoading: true, isLoaded: false },
-                    error: null,
-                    payload: defaultPayload,
-                };
-            case FINISH:
-                return {
-                    status: { isLoading: false, isLoaded: true },
-                    error: null,
-                    payload: action.payload,
-                };
-            case ERROR:
-                return {
-                    status: { isLoading: false, isLoaded: true },
-                    error: action.error,
-                    payload: defaultPayload,
-                };
-            case RESET:
-                return __assign({}, INITIAL_STATE, { payload: defaultPayload });
-            default:
-                return state;
-        }
-    };
-};
-var createSelectors = function (type) {
-    var rootSelector = createSelector(function (state) { return state[type]; }, function (root) { return root; });
-    var statusSelector = createSelector(rootSelector, function (root) { return root.status; });
-    var payloadSelector = createSelector(rootSelector, function (root) { return root.payload; });
-    return {
-        getIsReady: createSelector(statusSelector, function (status) { return status.isLoaded && !status.isLoading; }),
-        getStatus: statusSelector,
-        getPayload: payloadSelector,
-        getPayloadData: createSelector(payloadSelector, function (payload) { return (payload && payload.data ? payload.data : null); }),
-        getError: createSelector(rootSelector, function (root) { return root.error; }),
-    };
-};
-// export const createDuck = ({ type, defaultPayload, ...rest }: DuckOptions) => {
-//   const action = createActionCreators(type)
-//   const reducer = createReducer(type, defaultPayload)
-//   const duck = {
-//     type,
-//     action,
-//     reducer,
-//     selectors: createSelectors(type),
-//   }
-//   const getAsyncAction = (name, fn) => (
-//     props: any,
-//     callback: (payload: Payload) => void,
-//   ) => async (dispatch: (action: Action) => void) => {
-//     dispatch(duck.action.start())
-//     return fn(props)
-//       .then(payload => {
-//         if (callback) return callback(payload)
-//         return name === 'get' && dispatch(duck.action.finish(payload))
-//       })
-//       .catch(error => dispatch(duck.action.error(error)))
-//   }
-//   Object.entries(rest).map(
-//     ([name, value]) => (duck.action[name] = getAsyncAction(name, value)),
-//   )
-//   return duck
-// }
+const createReducer = (type, initialState = {}) => (state = INITIAL_STATE, action = {}) => {
+  const {
+    START,
+    FINISH,
+    ERROR,
+    RESET
+  } = createTypes(type);
+  const INITIAL = { ...INITIAL_STATE,
+    ...initialState
+  };
 
-export { createTypes, createActionCreators, createReducer, createSelectors };
+  switch (action.type) {
+    case START:
+      return {
+        isLoading: true,
+        error: null,
+        payload: INITIAL.payload
+      };
+
+    case FINISH:
+      return {
+        isLoading: false,
+        error: null,
+        payload: action.payload
+      };
+
+    case ERROR:
+      return {
+        isLoading: false,
+        error: action.error,
+        payload: INITIAL.payload
+      };
+
+    case RESET:
+    default:
+      return INITIAL;
+  }
+};
+const createSelectors = (type, selectors) => {
+  const allSelector = createSelector(state => state[type] || state, root => root);
+  const payloadSelector = createSelector(allSelector, root => root.payload);
+  return { ...selectors,
+    getAll: allSelector,
+    getIsLoading: createSelector(allSelector, root => root.isLoading),
+    getPayload: payloadSelector,
+    getPayloadData: createSelector(payloadSelector, payload => payload && payload.data ? payload.data : null),
+    getError: createSelector(allSelector, root => root.error)
+  };
+};
+const createDuck = ({
+  type,
+  initialState,
+  selectors,
+  ...rest
+}) => {
+  const action = createActionCreators(type);
+  const reducer = createReducer(type, initialState);
+  const duck = {
+    type,
+    action,
+    reducer,
+    selectors: createSelectors(type, selectors)
+  };
+
+  const getAsyncAction = (name, fn) => (props, callback) => async dispatch => {
+    dispatch(duck.action.start());
+    return fn(props).then(payload => {
+      if (callback) return callback(payload);
+      return name === 'get' && dispatch(duck.action.finish(payload));
+    }).catch(error => dispatch(duck.action.error(error)));
+  };
+
+  Object.entries(rest).map(([name, value]) => duck.action[name] = getAsyncAction(name, value));
+  return duck;
+};
+
+export { createTypes, createActionCreators, createReducer, createSelectors, createDuck };
 //# sourceMappingURL=index.es.js.map
