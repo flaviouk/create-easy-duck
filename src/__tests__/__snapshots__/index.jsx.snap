@@ -1,0 +1,116 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should create action creators 1`] = `
+Object {
+  "type": "RANDOM_NAME/START",
+}
+`;
+
+exports[`should create action creators 2`] = `
+Object {
+  "payload": Object {
+    "hello": "there",
+  },
+  "type": "RANDOM_NAME/FINISH",
+}
+`;
+
+exports[`should create action creators 3`] = `
+Object {
+  "error": "An error occurred",
+  "type": "RANDOM_NAME/ERROR",
+}
+`;
+
+exports[`should create action creators 4`] = `
+Object {
+  "error": "Something went wrong",
+  "type": "RANDOM_NAME/ERROR",
+}
+`;
+
+exports[`should create base types 1`] = `
+Object {
+  "ERROR": "RANDOM_NAME/ERROR",
+  "FINISH": "RANDOM_NAME/FINISH",
+  "RESET": "RANDOM_NAME/RESET",
+  "START": "RANDOM_NAME/START",
+}
+`;
+
+exports[`should create base types 2`] = `
+Object {
+  "ERROR": "ANOTHER_NAME/ERROR",
+  "FINISH": "ANOTHER_NAME/FINISH",
+  "RESET": "ANOTHER_NAME/RESET",
+  "START": "ANOTHER_NAME/START",
+}
+`;
+
+exports[`should create reducer 1`] = `
+Object {
+  "error": null,
+  "payload": null,
+  "status": Object {
+    "isLoaded": false,
+    "isLoading": false,
+  },
+}
+`;
+
+exports[`should create reducer 2`] = `
+Object {
+  "error": null,
+  "payload": null,
+  "status": Object {
+    "isLoaded": false,
+    "isLoading": false,
+  },
+}
+`;
+
+exports[`should create reducer 3`] = `
+Object {
+  "error": null,
+  "payload": null,
+  "status": Object {
+    "isLoaded": false,
+    "isLoading": true,
+  },
+}
+`;
+
+exports[`should create reducer 4`] = `
+Object {
+  "error": null,
+  "payload": Object {
+    "it": "works",
+  },
+  "status": Object {
+    "isLoaded": true,
+    "isLoading": false,
+  },
+}
+`;
+
+exports[`should create reducer 5`] = `
+Object {
+  "error": "Something went wrong",
+  "payload": null,
+  "status": Object {
+    "isLoaded": true,
+    "isLoading": false,
+  },
+}
+`;
+
+exports[`should create reducer 6`] = `
+Object {
+  "error": null,
+  "payload": null,
+  "status": Object {
+    "isLoaded": false,
+    "isLoading": false,
+  },
+}
+`;
