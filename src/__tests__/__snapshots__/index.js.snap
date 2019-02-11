@@ -87,7 +87,6 @@ exports[`should create duck 6`] = `1`;
 
 exports[`should create reducer 1`] = `
 Object {
-  "data": null,
   "error": null,
   "isLoading": false,
   "payload": null,

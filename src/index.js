@@ -27,20 +27,18 @@ const INITIAL_STATE = {
   payload: null,
 }
 
-export const createReducer = (type, initialState = {}) => (
-  state = INITIAL_STATE,
+export const createReducer = (type, initialState = INITIAL_STATE) => (
+  state,
   action = {},
 ) => {
   const { START, FINISH, ERROR, RESET } = createTypes(type)
-
-  const INITIAL = { ...INITIAL_STATE, ...initialState }
 
   switch (action.type) {
     case START:
       return {
         isLoading: true,
         error: null,
-        payload: INITIAL.payload,
+        payload: initialState.payload,
       }
 
     case FINISH:
@@ -54,12 +52,14 @@ export const createReducer = (type, initialState = {}) => (
       return {
         isLoading: false,
         error: action.error,
-        payload: INITIAL.payload,
+        payload: initialState.payload,
       }
 
     case RESET:
+      return initialState
+
     default:
-      return INITIAL
+      return state || initialState
   }
 }
 

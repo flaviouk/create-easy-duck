@@ -22,7 +22,7 @@ test('should create action creators', () => {
 
 test('should create reducer', () => {
   const TYPE = 'RANDOM_NAME'
-  expect(createReducer(TYPE, { data: null })()).toMatchSnapshot()
+  expect(createReducer(TYPE)()).toMatchSnapshot()
 
   const action = createActionCreators(TYPE)
   const reducer = createReducer(TYPE)
@@ -64,7 +64,11 @@ test('should create selectors', () => {
 test('should create duck', () => {
   const duck = createDuck({
     type: 'RANDOM_NAME',
-    initialState: { payload: { data: { count: 1 } } },
+    initialState: {
+      isLoading: false,
+      error: null,
+      payload: { data: { count: 1 } },
+    },
     selectors: {
       getCount: state => state.payload.data.count,
     },

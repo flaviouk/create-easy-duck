@@ -288,8 +288,8 @@ var INITIAL_STATE = {
   payload: null
 };
 var createReducer = function createReducer(type) {
-  var initialState = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  return function () {
+  var initialState = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : INITIAL_STATE;
+  return function (state) {
     var action = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     var _createTypes2 = createTypes(type),
@@ -298,14 +298,12 @@ var createReducer = function createReducer(type) {
         ERROR = _createTypes2.ERROR,
         RESET = _createTypes2.RESET;
 
-    var INITIAL = _objectSpread({}, INITIAL_STATE, initialState);
-
     switch (action.type) {
       case START:
         return {
           isLoading: true,
           error: null,
-          payload: INITIAL.payload
+          payload: initialState.payload
         };
 
       case FINISH:
@@ -319,12 +317,14 @@ var createReducer = function createReducer(type) {
         return {
           isLoading: false,
           error: action.error,
-          payload: INITIAL.payload
+          payload: initialState.payload
         };
 
       case RESET:
+        return initialState;
+
       default:
-        return INITIAL;
+        return state || initialState;
     }
   };
 };
