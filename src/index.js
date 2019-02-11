@@ -22,7 +22,7 @@ export const createActionCreators = type => {
 }
 
 const INITIAL_STATE = {
-  isLoading: false,
+  isLoading: true,
   error: null,
   payload: null,
 }

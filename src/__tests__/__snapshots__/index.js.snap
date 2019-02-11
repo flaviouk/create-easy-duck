@@ -88,7 +88,7 @@ exports[`should create duck 6`] = `1`;
 exports[`should create reducer 1`] = `
 Object {
   "error": null,
-  "isLoading": false,
+  "isLoading": true,
   "payload": null,
 }
 `;
@@ -96,7 +96,7 @@ Object {
 exports[`should create reducer 2`] = `
 Object {
   "error": null,
-  "isLoading": false,
+  "isLoading": true,
   "payload": null,
 }
 `;
@@ -130,7 +130,7 @@ Object {
 exports[`should create reducer 6`] = `
 Object {
   "error": null,
-  "isLoading": false,
+  "isLoading": true,
   "payload": null,
 }
 `;
