@@ -1,4 +1,7 @@
 import { createSelector } from 'reselect'
+import createSagaMiddleware from 'redux-saga'
+import { applyMiddleware, createStore, compose } from 'redux'
+import thunk from 'redux-thunk'
 
 export const createTypes = type => ({
   START: `${type}/START`,
@@ -119,4 +122,34 @@ export const createDuck = ({ type, initialState, selectors, ...rest }) => {
   )
 
   return duck
+}
+
+export const createEasyStore = ({
+  reducer = state => state,
+  middlewares = [],
+  saga,
+  name,
+}) => {
+  const composeEnhancers =
+    typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+      ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+          name,
+          serialize: true,
+        })
+      : compose
+
+  const sagaMiddleware = saga && createSagaMiddleware()
+
+  const allMiddlewares = [thunk, ...middlewares]
+
+  if (sagaMiddleware) allMiddlewares.push(sagaMiddleware)
+
+  const store = createStore(
+    reducer,
+    composeEnhancers(applyMiddleware(...allMiddlewares)),
+  )
+
+  if (sagaMiddleware) sagaMiddleware.run(saga)
+
+  return store
 }

@@ -2,6 +2,27 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+var reselect = require('reselect');
+var createSagaMiddleware = _interopDefault(require('redux-saga'));
+var redux = require('redux');
+var thunk = _interopDefault(require('redux-thunk'));
+
+function _typeof(obj) {
+  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+    _typeof = function (obj) {
+      return typeof obj;
+    };
+  } else {
+    _typeof = function (obj) {
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    };
+  }
+
+  return _typeof(obj);
+}
+
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
   try {
     var info = gen[key](arg);
@@ -112,8 +133,24 @@ function _slicedToArray(arr, i) {
   return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
 }
 
+function _toConsumableArray(arr) {
+  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+}
+
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+}
+
 function _arrayWithHoles(arr) {
   if (Array.isArray(arr)) return arr;
+}
+
+function _iterableToArray(iter) {
+  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
 }
 
 function _iterableToArrayLimit(arr, i) {
@@ -142,109 +179,13 @@ function _iterableToArrayLimit(arr, i) {
   return _arr;
 }
 
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance");
+}
+
 function _nonIterableRest() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance");
 }
-
-function defaultEqualityCheck(a, b) {
-  return a === b;
-}
-
-function areArgumentsShallowlyEqual(equalityCheck, prev, next) {
-  if (prev === null || next === null || prev.length !== next.length) {
-    return false;
-  }
-
-  // Do this in a for loop (and not a `forEach` or an `every`) so we can determine equality as fast as possible.
-  var length = prev.length;
-  for (var i = 0; i < length; i++) {
-    if (!equalityCheck(prev[i], next[i])) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-function defaultMemoize(func) {
-  var equalityCheck = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultEqualityCheck;
-
-  var lastArgs = null;
-  var lastResult = null;
-  // we reference arguments instead of spreading them for performance reasons
-  return function () {
-    if (!areArgumentsShallowlyEqual(equalityCheck, lastArgs, arguments)) {
-      // apply arguments instead of spreading for performance.
-      lastResult = func.apply(null, arguments);
-    }
-
-    lastArgs = arguments;
-    return lastResult;
-  };
-}
-
-function getDependencies(funcs) {
-  var dependencies = Array.isArray(funcs[0]) ? funcs[0] : funcs;
-
-  if (!dependencies.every(function (dep) {
-    return typeof dep === 'function';
-  })) {
-    var dependencyTypes = dependencies.map(function (dep) {
-      return typeof dep;
-    }).join(', ');
-    throw new Error('Selector creators expect all input-selectors to be functions, ' + ('instead received the following types: [' + dependencyTypes + ']'));
-  }
-
-  return dependencies;
-}
-
-function createSelectorCreator(memoize) {
-  for (var _len = arguments.length, memoizeOptions = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    memoizeOptions[_key - 1] = arguments[_key];
-  }
-
-  return function () {
-    for (var _len2 = arguments.length, funcs = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-      funcs[_key2] = arguments[_key2];
-    }
-
-    var recomputations = 0;
-    var resultFunc = funcs.pop();
-    var dependencies = getDependencies(funcs);
-
-    var memoizedResultFunc = memoize.apply(undefined, [function () {
-      recomputations++;
-      // apply arguments instead of spreading for performance.
-      return resultFunc.apply(null, arguments);
-    }].concat(memoizeOptions));
-
-    // If a selector is called with the exact same arguments we don't need to traverse our dependencies again.
-    var selector = memoize(function () {
-      var params = [];
-      var length = dependencies.length;
-
-      for (var i = 0; i < length; i++) {
-        // apply arguments instead of spreading and mutate a local list of params for performance.
-        params.push(dependencies[i].apply(null, arguments));
-      }
-
-      // apply arguments instead of spreading for performance.
-      return memoizedResultFunc.apply(null, params);
-    });
-
-    selector.resultFunc = resultFunc;
-    selector.dependencies = dependencies;
-    selector.recomputations = function () {
-      return recomputations;
-    };
-    selector.resetRecomputations = function () {
-      return recomputations = 0;
-    };
-    return selector;
-  };
-}
-
-var createSelector = createSelectorCreator(defaultMemoize);
 
 var createTypes = function createTypes(type) {
   return {
@@ -333,24 +274,24 @@ var createReducer = function createReducer(type) {
   };
 };
 var createSelectors = function createSelectors(type, selectors) {
-  var allSelector = createSelector(function (state) {
+  var allSelector = reselect.createSelector(function (state) {
     return state[type] || state;
   }, function (root) {
     return root;
   });
-  var payloadSelector = createSelector(allSelector, function (root) {
+  var payloadSelector = reselect.createSelector(allSelector, function (root) {
     return root.payload;
   });
   return _objectSpread({}, selectors, {
     getAll: allSelector,
-    getIsLoading: createSelector(allSelector, function (root) {
+    getIsLoading: reselect.createSelector(allSelector, function (root) {
       return root.isLoading;
     }),
     getPayload: payloadSelector,
-    getPayloadData: createSelector(payloadSelector, function (payload) {
+    getPayloadData: reselect.createSelector(payloadSelector, function (payload) {
       return payload && payload.data ? payload.data : null;
     }),
-    getError: createSelector(allSelector, function (root) {
+    getError: reselect.createSelector(allSelector, function (root) {
       return root.error;
     })
   });
@@ -415,10 +356,31 @@ var createDuck = function createDuck(_ref) {
   });
   return duck;
 };
+var createEasyStore = function createEasyStore(_ref5) {
+  var _ref5$reducer = _ref5.reducer,
+      reducer = _ref5$reducer === void 0 ? function (state) {
+    return state;
+  } : _ref5$reducer,
+      _ref5$middlewares = _ref5.middlewares,
+      middlewares = _ref5$middlewares === void 0 ? [] : _ref5$middlewares,
+      saga = _ref5.saga,
+      name = _ref5.name;
+  var composeEnhancers = (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+    name: name,
+    serialize: true
+  }) : redux.compose;
+  var sagaMiddleware = saga && createSagaMiddleware();
+  var allMiddlewares = [thunk].concat(_toConsumableArray(middlewares));
+  if (sagaMiddleware) allMiddlewares.push(sagaMiddleware);
+  var store = redux.createStore(reducer, composeEnhancers(redux.applyMiddleware.apply(void 0, _toConsumableArray(allMiddlewares))));
+  if (sagaMiddleware) sagaMiddleware.run(saga);
+  return store;
+};
 
 exports.createTypes = createTypes;
 exports.createActionCreators = createActionCreators;
 exports.createReducer = createReducer;
 exports.createSelectors = createSelectors;
 exports.createDuck = createDuck;
+exports.createEasyStore = createEasyStore;
 //# sourceMappingURL=index.js.map

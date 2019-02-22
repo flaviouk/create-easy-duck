@@ -8,6 +8,7 @@ import pkg from './package.json'
 export default {
   name: pkg.name,
   input: 'src/index.js',
+  external: ['redux', 'redux-thunk', 'redux-saga', 'reselect'],
   output: [
     {
       file: pkg.main,
