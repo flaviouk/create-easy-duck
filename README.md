@@ -14,12 +14,37 @@
 
 # Installation
 
-This module is distributed via [npm][npm] which is bundled with [node][node] and
-should be installed as one of your project's `dependencies`:
+#### This module is distributed via [npm][npm] which is bundled with [node][node] and should be installed as one of your project's `dependencies`:
+
+- Basic
 
 ```
-yarn add create-easy-duck
+yarn add create-easy-duck reselect
 ```
+
+- Everything
+
+```
+yarn add create-easy-duck reselect redux redux-saga redux-thunk
+```
+
+#### If you're going to use `createEasyStore`:
+
+- Install `redux`:
+
+```
+yarn add redux
+```
+
+- Install `redux-saga` and/or `redux-thunk` if you require them:
+
+```
+yarn add redux-saga redux-thunk
+```
+
+# Usage
+
+TODO
 
 # LICENSE
 

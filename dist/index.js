@@ -330,14 +330,15 @@ var createEasyStore = function createEasyStore(_ref4) {
       middlewares = _ref4$middlewares === void 0 ? [] : _ref4$middlewares,
       saga = _ref4.saga,
       name = _ref4.name;
+  if (!redux) throw new Error('Please install redux in your project');
   var composeEnhancers = (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
     name: name,
     serialize: true
-  }) : redux.compose;
-  var sagaMiddleware = saga && createSagaMiddleware();
-  var allMiddlewares = [thunk].concat(_toConsumableArray(middlewares));
+  }) : compose;
+  var sagaMiddleware = saga && createSagaMiddleware && createSagaMiddleware();
+  var allMiddlewares = [thunk].concat(_toConsumableArray(middlewares)).filter(Boolean);
   if (sagaMiddleware) allMiddlewares.push(sagaMiddleware);
-  var store = redux.createStore(reducer, composeEnhancers(redux.applyMiddleware.apply(void 0, _toConsumableArray(allMiddlewares))));
+  var store = createStore(reducer, composeEnhancers(applyMiddleware.apply(void 0, _toConsumableArray(allMiddlewares))));
   if (sagaMiddleware) sagaMiddleware.run(saga);
   return store;
 };

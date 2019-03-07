@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect'
 import createSagaMiddleware from 'redux-saga'
-import { applyMiddleware, createStore, compose } from 'redux'
+import * as redux from 'redux'
 import thunk from 'redux-thunk'
 
 export const createTypes = type => ({
@@ -137,6 +137,7 @@ export const createEasyStore = ({
   saga,
   name,
 }) => {
+  if (!redux) throw new Error('Please install redux in your project')
   const composeEnhancers =
     typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
       ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
@@ -145,9 +146,9 @@ export const createEasyStore = ({
         })
       : compose
 
-  const sagaMiddleware = saga && createSagaMiddleware()
+  const sagaMiddleware = saga && createSagaMiddleware && createSagaMiddleware()
 
-  const allMiddlewares = [thunk, ...middlewares]
+  const allMiddlewares = [thunk, ...middlewares].filter(Boolean)
 
   if (sagaMiddleware) allMiddlewares.push(sagaMiddleware)
 
