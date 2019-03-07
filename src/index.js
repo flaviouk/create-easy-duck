@@ -128,13 +128,6 @@ export const createDuck = (options = {}) => {
     }
   }
 
-  if (options.getActions) {
-    duck.action = {
-      ...duck.action,
-      ...options.getActions(duck.action),
-    }
-  }
-
   return duck
 }
 

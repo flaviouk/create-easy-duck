@@ -319,10 +319,6 @@ var createDuck = function createDuck() {
     duck.selector = _objectSpread({}, duck.selector, options.getSelectors(duck.selector));
   }
 
-  if (options.getActions) {
-    duck.action = _objectSpread({}, duck.action, options.getActions(duck.action));
-  }
-
   return duck;
 };
 var createEasyStore = function createEasyStore(_ref4) {
