@@ -20,7 +20,7 @@
     "build": "rollup -c",
     "start": "rollup -c -w",
     "precommit": "lint-staged",
-    "format": "prettier --write --config .prettierrc '**/*.{ts,tsx,json,md}'",
+    "format": "prettier --write --config .prettierrc '**/*.{js,json,md}'",
     "prepare": "yarn run build",
     "predeploy": "cd example && yarn install && yarn run build",
     "deploy": "gh-pages -d example/build"

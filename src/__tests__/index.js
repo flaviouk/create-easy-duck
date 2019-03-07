@@ -1,3 +1,5 @@
+import { createSelector } from 'reselect'
+
 import {
   createTypes,
   createActionCreators,
@@ -7,39 +9,75 @@ import {
 } from '../../dist'
 
 test('should create base types', () => {
-  expect(createTypes('RANDOM_NAME')).toMatchSnapshot()
-  expect(createTypes('ANOTHER_NAME')).toMatchSnapshot()
+  expect(createTypes('RANDOM_NAME')).toEqual({
+    ERROR: 'RANDOM_NAME/ERROR',
+    FINISH: 'RANDOM_NAME/FINISH',
+    RESET: 'RANDOM_NAME/RESET',
+    START: 'RANDOM_NAME/START',
+  })
+
+  expect(createTypes('ANOTHER_NAME')).toEqual({
+    ERROR: 'ANOTHER_NAME/ERROR',
+    FINISH: 'ANOTHER_NAME/FINISH',
+    RESET: 'ANOTHER_NAME/RESET',
+    START: 'ANOTHER_NAME/START',
+  })
 })
 
 test('should create action creators', () => {
   const action = createActionCreators('RANDOM_NAME')
-  expect(action.start()).toMatchSnapshot()
-  expect(action.finish({ hello: 'there' })).toMatchSnapshot()
-  expect(action.error(new Error('An error occurred'))).toMatchSnapshot()
-  expect(action.error()).toMatchSnapshot()
-  expect(action.reset()).toMatchSnapshot()
+  expect(action.start()).toEqual({
+    type: 'RANDOM_NAME/START',
+  })
+  expect(action.finish({ hello: 'there' })).toEqual({
+    type: 'RANDOM_NAME/FINISH',
+    payload: { hello: 'there' },
+  })
+  expect(action.error(new Error('An error occurred'))).toEqual({
+    type: 'RANDOM_NAME/ERROR',
+    error: 'An error occurred',
+  })
+  expect(action.error()).toEqual({
+    type: 'RANDOM_NAME/ERROR',
+    error: 'Something went wrong',
+  })
+  expect(action.reset()).toEqual({ type: 'RANDOM_NAME/RESET' })
 })
 
 test('should create reducer', () => {
   const TYPE = 'RANDOM_NAME'
-  expect(createReducer(TYPE)()).toMatchSnapshot()
+  const INITIAL_STATE = {
+    error: null,
+    isLoading: true,
+    payload: null,
+  }
+
+  expect(createReducer(TYPE)()).toEqual(INITIAL_STATE)
 
   const action = createActionCreators(TYPE)
   const reducer = createReducer(TYPE)
   let state = reducer()
-  expect(state).toMatchSnapshot()
+  expect(state).toEqual(INITIAL_STATE)
 
   state = reducer(state, action.start())
-  expect(state).toMatchSnapshot()
+  expect(state).toEqual(INITIAL_STATE)
 
   state = reducer(state, action.finish({ it: 'works' }))
-  expect(state).toMatchSnapshot()
+  expect(state).toEqual({
+    error: null,
+    isLoading: false,
+    payload: { it: 'works' },
+  })
 
   state = reducer(state, action.error())
-  expect(state).toMatchSnapshot()
+  expect(state).toEqual({
+    error: 'Something went wrong',
+    isLoading: false,
+    payload: null,
+  })
 
   state = reducer(state, action.reset())
-  expect(state).toMatchSnapshot()
+  expect(state).toEqual(INITIAL_STATE)
 })
 
 test('should create selectors', () => {
@@ -52,13 +90,27 @@ test('should create selectors', () => {
     error: 'It failed!',
   }
 
-  expect(selectors.getAll(state)).toMatchSnapshot()
-  expect(selectors.getIsLoading(state)).toMatchSnapshot()
-  expect(selectors.getPayload(state)).toMatchSnapshot()
-  expect(selectors.getPayloadData(state)).toMatchSnapshot()
-  expect(selectors.getError(state)).toMatchSnapshot()
-  expect(selectors.custom(state)).toMatchSnapshot()
-  expect(selectors.custom({ RANDOM_NAME: state })).toMatchSnapshot()
+  expect(selectors.getAll(state)).toEqual({
+    error: 'It failed!',
+    isLoading: false,
+    payload: {
+      data: {
+        hello: 'there',
+      },
+    },
+  })
+  expect(selectors.getIsLoading(state)).toBe(false)
+  expect(selectors.getPayload(state)).toEqual({
+    data: {
+      hello: 'there',
+    },
+  })
+  expect(selectors.getPayloadData(state)).toEqual({
+    hello: 'there',
+  })
+  expect(selectors.getError(state)).toBe('It failed!')
+  expect(selectors.custom(state)).toBe('Loaded')
+  expect(selectors.custom({ RANDOM_NAME: state })).toBe('Loaded')
 })
 
 test('should create duck', () => {
@@ -69,17 +121,34 @@ test('should create duck', () => {
       error: null,
       payload: { data: { count: 1 } },
     },
-    selectors: {
-      getCount: state => state.payload.data.count,
-    },
+    getSelectors: selectors => ({
+      getCount: createSelector(
+        selectors.getPayloadData,
+        data => data.count,
+      ),
+    }),
   })
 
   let state = duck.reducer()
 
-  expect(duck.selectors.getAll(state)).toMatchSnapshot()
-  expect(duck.selectors.getIsLoading(state)).toMatchSnapshot()
-  expect(duck.selectors.getPayload(state)).toMatchSnapshot()
-  expect(duck.selectors.getPayloadData(state)).toMatchSnapshot()
-  expect(duck.selectors.getError(state)).toMatchSnapshot()
-  expect(duck.selectors.getCount(state)).toMatchSnapshot()
+  expect(duck.selector.getAll(state)).toEqual({
+    error: null,
+    isLoading: false,
+    payload: {
+      data: {
+        count: 1,
+      },
+    },
+  })
+  expect(duck.selector.getIsLoading(state)).toBe(false)
+  expect(duck.selector.getPayload(state)).toEqual({
+    data: {
+      count: 1,
+    },
+  })
+  expect(duck.selector.getPayloadData(state)).toEqual({
+    count: 1,
+  })
+  expect(duck.selector.getError(state)).toBe(null)
+  expect(duck.selector.getCount(state)).toBe(1)
 })

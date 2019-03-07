@@ -66,7 +66,7 @@ export const createReducer = (type, initialState = INITIAL_STATE) => (
   }
 }
 
-export const createSelectors = (type, selectors) => {
+export const createSelectors = (type, selector = {}) => {
   const allSelector = createSelector(
     state => state[type] || state,
     root => root,
@@ -77,7 +77,7 @@ export const createSelectors = (type, selectors) => {
   )
 
   return {
-    ...selectors,
+    ...selector,
     getAll: allSelector,
     getIsLoading: createSelector(
       allSelector,
@@ -95,31 +95,45 @@ export const createSelectors = (type, selectors) => {
   }
 }
 
-export const createDuck = ({ type, initialState, selectors, ...rest }) => {
-  const action = createActionCreators(type)
-  const reducer = createReducer(type, initialState)
-
+export const createDuck = (options = {}) => {
   const duck = {
-    type,
-    action,
-    reducer,
-    selectors: createSelectors(type, selectors),
+    type: options.type,
+    action: createActionCreators(options.type),
+    reducer: createReducer(options.type, options.initialState),
+    selector: createSelectors(options.type, options.selector),
   }
 
-  const getAsyncAction = (name, fn) => (props, callback) => async dispatch => {
+  const getAsyncAction = fn => (
+    props,
+    callback = duck.action.finish,
+  ) => async dispatch => {
     dispatch(duck.action.start())
 
     return fn(props)
       .then(payload => {
-        if (callback) return callback(payload)
-        return name === 'get' && dispatch(duck.action.finish(payload))
+        if (callback) dispatch(callback(payload))
+        return payload
       })
       .catch(error => dispatch(duck.action.error(error)))
   }
 
-  Object.entries(rest).map(
-    ([name, value]) => (duck.action[name] = getAsyncAction(name, value)),
+  Object.entries(options.action || {}).map(
+    ([name, fn]) => (duck.action[name] = getAsyncAction(fn)),
   )
+
+  if (options.getSelectors) {
+    duck.selector = {
+      ...duck.selector,
+      ...options.getSelectors(duck.selector),
+    }
+  }
+
+  if (options.getActions) {
+    duck.action = {
+      ...duck.action,
+      ...options.getActions(duck.action),
+    }
+  }
 
   return duck
 }

@@ -87,42 +87,6 @@ function _objectSpread(target) {
   return target;
 }
 
-function _objectWithoutPropertiesLoose(source, excluded) {
-  if (source == null) return {};
-  var target = {};
-  var sourceKeys = Object.keys(source);
-  var key, i;
-
-  for (i = 0; i < sourceKeys.length; i++) {
-    key = sourceKeys[i];
-    if (excluded.indexOf(key) >= 0) continue;
-    target[key] = source[key];
-  }
-
-  return target;
-}
-
-function _objectWithoutProperties(source, excluded) {
-  if (source == null) return {};
-
-  var target = _objectWithoutPropertiesLoose(source, excluded);
-
-  var key, i;
-
-  if (Object.getOwnPropertySymbols) {
-    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
-
-    for (i = 0; i < sourceSymbolKeys.length; i++) {
-      key = sourceSymbolKeys[i];
-      if (excluded.indexOf(key) >= 0) continue;
-      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
-      target[key] = source[key];
-    }
-  }
-
-  return target;
-}
-
 function _slicedToArray(arr, i) {
   return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
 }
@@ -267,7 +231,8 @@ var createReducer = function createReducer(type) {
     }
   };
 };
-var createSelectors = function createSelectors(type, selectors) {
+var createSelectors = function createSelectors(type) {
+  var selector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var allSelector = createSelector(function (state) {
     return state[type] || state;
   }, function (root) {
@@ -276,7 +241,7 @@ var createSelectors = function createSelectors(type, selectors) {
   var payloadSelector = createSelector(allSelector, function (root) {
     return root.payload;
   });
-  return _objectSpread({}, selectors, {
+  return _objectSpread({}, selector, {
     getAll: allSelector,
     getIsLoading: createSelector(allSelector, function (root) {
       return root.isLoading;
@@ -290,27 +255,22 @@ var createSelectors = function createSelectors(type, selectors) {
     })
   });
 };
-var createDuck = function createDuck(_ref) {
-  var type = _ref.type,
-      initialState = _ref.initialState,
-      selectors = _ref.selectors,
-      rest = _objectWithoutProperties(_ref, ["type", "initialState", "selectors"]);
-
-  var action = createActionCreators(type);
-  var reducer = createReducer(type, initialState);
+var createDuck = function createDuck() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var duck = {
-    type: type,
-    action: action,
-    reducer: reducer,
-    selectors: createSelectors(type, selectors)
+    type: options.type,
+    action: createActionCreators(options.type),
+    reducer: createReducer(options.type, options.initialState),
+    selector: createSelectors(options.type, options.selector)
   };
 
-  var getAsyncAction = function getAsyncAction(name, fn) {
-    return function (props, callback) {
+  var getAsyncAction = function getAsyncAction(fn) {
+    return function (props) {
+      var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : duck.action.finish;
       return (
         /*#__PURE__*/
         function () {
-          var _ref2 = _asyncToGenerator(
+          var _ref = _asyncToGenerator(
           /*#__PURE__*/
           regeneratorRuntime.mark(function _callee(dispatch) {
             return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -319,8 +279,8 @@ var createDuck = function createDuck(_ref) {
                   case 0:
                     dispatch(duck.action.start());
                     return _context.abrupt("return", fn(props).then(function (payload) {
-                      if (callback) return callback(payload);
-                      return name === 'get' && dispatch(duck.action.finish(payload));
+                      if (callback) dispatch(callback(payload));
+                      return payload;
                     }).catch(function (error) {
                       return dispatch(duck.action.error(error));
                     }));
@@ -334,31 +294,40 @@ var createDuck = function createDuck(_ref) {
           }));
 
           return function (_x) {
-            return _ref2.apply(this, arguments);
+            return _ref.apply(this, arguments);
           };
         }()
       );
     };
   };
 
-  Object.entries(rest).map(function (_ref3) {
-    var _ref4 = _slicedToArray(_ref3, 2),
-        name = _ref4[0],
-        value = _ref4[1];
+  Object.entries(options.action || {}).map(function (_ref2) {
+    var _ref3 = _slicedToArray(_ref2, 2),
+        name = _ref3[0],
+        fn = _ref3[1];
 
-    return duck.action[name] = getAsyncAction(name, value);
+    return duck.action[name] = getAsyncAction(fn);
   });
+
+  if (options.getSelectors) {
+    duck.selector = _objectSpread({}, duck.selector, options.getSelectors(duck.selector));
+  }
+
+  if (options.getActions) {
+    duck.action = _objectSpread({}, duck.action, options.getActions(duck.action));
+  }
+
   return duck;
 };
-var createEasyStore = function createEasyStore(_ref5) {
-  var _ref5$reducer = _ref5.reducer,
-      reducer = _ref5$reducer === void 0 ? function (state) {
+var createEasyStore = function createEasyStore(_ref4) {
+  var _ref4$reducer = _ref4.reducer,
+      reducer = _ref4$reducer === void 0 ? function (state) {
     return state;
-  } : _ref5$reducer,
-      _ref5$middlewares = _ref5.middlewares,
-      middlewares = _ref5$middlewares === void 0 ? [] : _ref5$middlewares,
-      saga = _ref5.saga,
-      name = _ref5.name;
+  } : _ref4$reducer,
+      _ref4$middlewares = _ref4.middlewares,
+      middlewares = _ref4$middlewares === void 0 ? [] : _ref4$middlewares,
+      saga = _ref4.saga,
+      name = _ref4.name;
   var composeEnhancers = (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
     name: name,
     serialize: true
