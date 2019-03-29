@@ -2516,8 +2516,7 @@ cosmiconfig@^5.0.0, cosmiconfig@^5.0.5, cosmiconfig@^5.0.6:
     parse-json "^4.0.0"
 
 "create-easy-duck@link:..":
-  version "0.0.0"
-  uid ""
+  version "1.0.0-rc.1"
 
 create-ecdh@^4.0.0:
   version "4.0.3"
@@ -7939,9 +7938,9 @@ react-dev-utils@^7.0.1:
     strip-ansi "4.0.0"
     text-table "0.2.0"
 
-react-dom@^16.8.0-alpha.1:
+react-dom@16.8.0:
   version "16.8.0"
-  resolved "http://npm.internal.lonres.com:4873/react-dom/-/react-dom-16.8.0.tgz#18f28d4be3571ed206672a267c66dd083145a9c4"
+  resolved "https://registry.npmjs.org/react-dom/-/react-dom-16.8.0.tgz#18f28d4be3571ed206672a267c66dd083145a9c4"
   integrity sha512-dBzoAGYZpW9Yggp+CzBPC7q1HmWSeRc93DWrwbskmG1eHJWznZB/p0l/Sm+69leIGUS91AXPB/qB3WcPnKx8Sw==
   dependencies:
     loose-envify "^1.1.0"
@@ -7954,9 +7953,9 @@ react-error-overlay@^5.1.2:
   resolved "http://npm.internal.lonres.com:4873/react-error-overlay/-/react-error-overlay-5.1.2.tgz#888957b884d4b25b083a82ad550f7aad96585394"
   integrity sha512-7kEBKwU9R8fKnZJBRa5RSIfay4KJwnYvKB6gODGicUmDSAhQJ7Tdnll5S0RLtYrzRfMVXlqYw61rzrSpP4ThLQ==
 
-react-scripts@^2.1.3:
+react-scripts@2.1.3:
   version "2.1.3"
-  resolved "http://npm.internal.lonres.com:4873/react-scripts/-/react-scripts-2.1.3.tgz#6e49be279f4039fb9f330d2b3529b933b8e90945"
+  resolved "https://registry.npmjs.org/react-scripts/-/react-scripts-2.1.3.tgz#6e49be279f4039fb9f330d2b3529b933b8e90945"
   integrity sha512-JASD0QVVgSVleVhA9TeA+UBx+shq887hm/L+09qjZLrqIUvJZHZU+oOnhMFGot02Yop+LKfkvf9KSsTNlu/Rwg==
   dependencies:
     "@babel/core" "7.1.6"
@@ -8011,7 +8010,6 @@ react-scripts@^2.1.3:
 
 "react@link:../node_modules/react":
   version "0.0.0"
-  uid ""
 
 read-pkg-up@^1.0.1:
   version "1.0.1"
